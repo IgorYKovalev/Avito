@@ -6,11 +6,28 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium_stealth import stealth
 import json
 import pandas as pd
+import dateparser
 
 
 # Функция для извлечения данных из одного поста
 def extract_post_data(post):
     data = {}
+
+    # Извлечение времени размещения вакансии
+    try:
+        posted_data = post.find_element(
+            By.CLASS_NAME, 'iva-item-dateInfoStep-_acjp').find_element(By.TAG_NAME, 'p').text
+
+        parsed_date = dateparser.parse(posted_data)
+        if parsed_date:
+            posted_data = parsed_date.strftime('%Y-%m-%d')
+        else:
+            posted_data = 'Нет данных'
+
+        data['posted_data'] = posted_data
+
+    except:
+        data['posted_data'] = 'Нет данных'
 
     # Извлечение названия
     try:
