@@ -24,10 +24,10 @@ def extract_post_data(post):
         else:
             posted_data = 'Нет данных'
 
-        data['posted_data'] = posted_data
+        data['data'] = posted_data
 
     except:
-        data['posted_data'] = 'Нет данных'
+        data['data'] = 'Нет данных'
 
     # Извлечение названия
     try:
