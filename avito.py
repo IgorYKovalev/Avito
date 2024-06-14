@@ -35,7 +35,7 @@ def extract_post_data(post):
     except:
         data['name'] = 'Нет названия'
 
-    # Извлечение цены
+    # Извлечение зп
     try:
         price_meta = post.find_element(By.CLASS_NAME, 'price-price-JP7qe').find_elements(By.TAG_NAME, 'meta')
         for meta in price_meta:
