@@ -29,6 +29,14 @@ def extract_post_data(post):
     except:
         data['data'] = 'Нет данных'
 
+    # Извлечение названия компании
+    try:
+        company_name = post.find_element(By.CSS_SELECTOR, '.iva-item-userInfoStep-dWwGU p.styles-module-root-YczkZ')
+        print(company_name.text)
+        data['company'] = company_name.text
+    except:
+        data['company'] = 'Нет названия'
+
     # Извлечение названия
     try:
         data['name'] = post.find_element(By.CLASS_NAME, 'iva-item-titleStep-pdebR').find_element(By.TAG_NAME, 'h3').text
@@ -122,6 +130,7 @@ def save_to_excel(data, filename):
 def main(url, num_pages=None):
     base = []
     options = webdriver.ChromeOptions()
+    # options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
     driver = webdriver.Chrome(options=options)
@@ -134,6 +143,7 @@ def main(url, num_pages=None):
         fix_hairline=True,
     )
     driver.get(url)
+    driver.maximize_window()
     time.sleep(5)
 
     page_count = 0
