@@ -4,15 +4,16 @@ from bs4 import BeautifulSoup
 import time
 import re
 
-# меняем название вакансии после ?text=кассир или курьер и т.д.
-# api_url = "http://opendata.trudvsem.ru/api/v1/vacancies/region/46?text=кассир"
-api_url = "http://opendata.trudvsem.ru/api/v1/vacancies?text=кассир"
+# Базовый URL API
+base_api_url = "http://opendata.trudvsem.ru/api/v1/vacancies/region/"
 
-# Параметры запроса
-params = {
-    'offset': 0,
-    'limit': 100
-}
+# Список регионов
+regions = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+    30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56,
+    57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 85, 76, 77, 78, 79, 80, 81, 82, 83,
+    84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 99
+]
 
 # Создание нового Excel файла
 wb = Workbook()
@@ -49,7 +50,7 @@ ws.append([
 
 
 # Функция для получения данных о вакансиях
-def get_vacancies(params):
+def get_vacancies(api_url, params):
     response = requests.get(api_url, params=params)
     if response.status_code == 200:
         return response.json()
@@ -110,18 +111,28 @@ def save_to_excel(vacancies):
         ])
 
 
-# Получение данных постранично
-while True:
-    data = get_vacancies(params)
-    if data and 'results' in data and 'vacancies' in data['results']:
-        vacancies = data['results']['vacancies']
-        if not vacancies:
+# Параметры запроса
+params = {
+    'offset': 0,
+    'limit': 100,
+}
+
+# Получение данных по каждому региону
+for region_id in regions:
+    api_url = f"{base_api_url}{region_id}?text=кассир"
+    params['offset'] = 0
+
+    while True:
+        data = get_vacancies(api_url, params)
+        if data and 'results' in data and 'vacancies' in data['results']:
+            vacancies = data['results']['vacancies']
+            if not vacancies:
+                break
+            save_to_excel(vacancies)
+            params['offset'] += params['limit']
+            time.sleep(1)
+        else:
             break
-        save_to_excel(vacancies)
-        params['offset'] += params['limit']
-        time.sleep(1)
-    else:
-        break
 
 wb.save("vacancies.xlsx")
 print("Данные успешно сохранены в vacancies.xlsx")
